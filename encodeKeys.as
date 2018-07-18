@@ -22,8 +22,6 @@
 
 			var ripe:RIPEMD160 = new RIPEMD160();
 			
-			//Hashing public key with SHA-256 of RIPEMD-160.
-			//Açık anahtarımızın SHA-256 karmasını RIPEMD-160 ile özetliyoruz.
 			var riped:ByteArray = ripe.computeHash(Hex.toArray(SHA256.hashBytes(publicKey)));
 
 			return Hex.fromArray(riped);
@@ -34,18 +32,12 @@
 
 
 			var encodedPrivateKey:ByteArray = new ByteArray();
-			
-			//Adding "0x00" prefix.
-			//"0x00" ön ekini ekliyoruz.
+
 			encodedPrivateKey.writeBytes(Hex.toArray(prefix));
 			encodedPrivateKey.writeBytes(Hex.toArray(privateKey));
 			
-			//Generating address checksum by hashing twice with SHA-256.
-			//Adres sağlamasını ikili SHA-256 karması ile oluşturuyoruz.
 			var checksum:String = SHA256.hashBytes(Hex.toArray(SHA256.hashBytes(encodedPrivateKey))).substr(0,8);
 
-			//Finalizing address by adding checksum
-			//Adres sağlamasını ekleyerek sonlandırıyoruz.
 			encodedPrivateKey.writeBytes(Hex.toArray(checksum));
 			encodedPrivateKey.position = 0;
 			
