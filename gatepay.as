@@ -54,17 +54,7 @@ package  {
 	public var TXOutput_address:Array = new Array()
 		
 		
-		public function shipton() {
-			
-						// set the stage alighnment
-			stage.scaleMode = StageScaleMode.NO_SCALE;
-			stage.align = StageAlign.TOP_LEFT;
-			this.stage.addEventListener(Event.RESIZE, onResize);
-			
-			
-			this.addEventListener(Event.ADDED_TO_STAGE, start, false, 0, true);
-			
-			
+		public function gatepay() {
 		
 			init()
 			
@@ -72,21 +62,11 @@ package  {
 			
 			//logWallet()
 			
-			//stage.addEventListener("click", demof)
-			
-			//trace(generateWalletClass.bitcoinPrivateKey)
-			
 		}
 		
 	
 		
 		public function init() {
-			
-			///trace("AS: "+checkAddressClass.check("Xv7XoS24ztvmTi5JqM8JM2emoLwLtXzrs3"))
-			
-			stage.scaleMode = StageScaleMode.NO_SCALE;
-            stage.align = StageAlign.TOP_LEFT;
-			
 			
 			//Importing wallet files from wallet's local memory.
 			//Yerel hafızadan cüzdan bilgilerini çekiyoruz.
@@ -202,11 +182,7 @@ package  {
         public function decodeAddress(address:String):String {
 			return(           Hex.fromArray(Base58Encoder.decode( address) )          )
 		}
-		
-		
-		
-		
-		
+
 		
 	}
 	
