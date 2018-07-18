@@ -4,7 +4,7 @@
 	import flash.utils.ByteArray;
 	import flame.crypto.RIPEMD160;
 	import com.adobe.crypto.SHA256;
-    import flame.crypto.ECDSA
+        import flame.crypto.ECDSA
 	import encodeSig
 	import flash.net.SharedObject
 	import flash.net.dns.AAAARecord;
@@ -12,12 +12,10 @@
 	import flame.crypto.ECDSASignatureDeformatter
 	import flame.crypto.ECDSASignatureFormatter
 	
-	
-    //This class generates hex TX from given parameters (inputs and outputs)
+        //This class generates hex TX from given parameters (inputs and outputs)
 	//Bu sınıf transfer işlemini hex formatında oluşturur.
 	
 	public class generateTX {
-		
 		
     	public var encodeSigClass:encodeSig= new encodeSig()
 		public var ECDSAclass:ECDSA = new ECDSA()
@@ -25,13 +23,12 @@
 		var reversedData:String
 		var endian:String
 		
-        var scriptSigArray:Array= new Array()
+                var scriptSigArray:Array= new Array()
 
 
 		public function generateTX() {
 
 		}
-		
 		
 		public function generateUnsignedTX(txids:Array, vouts:Array, amounts:Array, addresses:Array, pubKey:String):String {
 			
@@ -87,11 +84,8 @@
 				unsignedTX.writeByte(0x00)
 			}
 				
-				
 				unsignedTX.writeBytes(Hex.toArray("ffffffff"))
 
-			
-			
 		}
 			
 			unsignedTX.writeBytes(Hex.toArray(     String(Number(amounts.length).toString(16))     ))
@@ -104,7 +98,6 @@
 
 			}
 			
-			
 				unsignedTX.writeByte(0x00)
 				unsignedTX.writeByte(0x00)
 				unsignedTX.writeByte(0x00)
@@ -115,40 +108,23 @@
 				unsignedTX.writeByte(0x00)
 				unsignedTX.writeByte(0x00)
 			
-			
-			
 			generateScriptSig(unsignedTX,walletInfo.data.publicKey)
 			
 		}
 			
-			
 	
-			
-
-			
 			//var keyDataa:ECCParameters= new ECCParameters()
 			//keyDataa= walletInfo.data.keyData
 	
 			
-			
 			//////ECDSAclass.deriveCorrespondingPubkey2(walletInfo.data.keyData.d)
 			
-			
 			//ECDSAclass.importParameters(walletInfo.data.keyData.x,walletInfo.data.keyData.y,walletInfo.data.keyData.d)
-			
-			
-			
-			//trace("ECCPARAM:   "+walletInfo.data.keyData)
-			
-			
-	
-			
 			
 			
 			return generateSignedTX(txids,vouts,amounts,addresses)
 			
 	}
-	
 	
 	var scriptSig:String
 	var ECDSAsig:String
@@ -160,7 +136,6 @@
 
 		scriptSigArray.push(scriptSig)
 	}
-	
 	
 		public function signTX(digest:String):String {
 			
@@ -178,18 +153,12 @@
 
 		var valid:Boolean = deformatter.verifySignature(Hex.toArray(digest), signature);
 
-trace("signature valid:", valid);
-
 			return Hex.fromArray(encodeSigClass.encodeSigParameters(Hex.fromArray(signature).substr(0,64),Hex.fromArray(signature).substr(64,64)))
 
 		}
-		
-		
-		
-		
+
 		public function generateSignedTX(txids:Array, vouts:Array, amounts:Array, addresses:Array):String {
-			
-			
+				
 		var walletInfo:SharedObject
 		walletInfo = SharedObject.getLocal("walletInfo");
 
@@ -227,23 +196,12 @@ trace("signature valid:", valid);
 
 				signedTX.writeBytes(Hex.toArray(hexIndex))
 
-				
-				
 				signedTX.writeBytes(Hex.toArray(String(Number(Number(String(scriptSigArray[i]).length)/2).toString(16))))
 				
 				signedTX.writeBytes(Hex.toArray(String(scriptSigArray[i])))
 				
-				
-				
 				signedTX.writeBytes(Hex.toArray("ffffffff"))
-				
-
-				
-				
-				
-
-			
-			
+	
 		}
 			
 			signedTX.writeBytes(Hex.toArray(     String(Number(amounts.length).toString(16))     ))
@@ -253,26 +211,16 @@ trace("signature valid:", valid);
 				signedTX.writeBytes(Hex.toArray(convertLittleEndian(amounts[n])))
 				signedTX.writeByte(0x19)
 				signedTX.writeBytes(generateScriptPubKey(addresses[n]))
-
 			}
 			
-			
 				signedTX.writeByte(0x00)
 				signedTX.writeByte(0x00)
 				signedTX.writeByte(0x00)
 				signedTX.writeByte(0x00)
 			
-			
-				
 				return Hex.fromArray(signedTX)
-			
-			
-	
 	}
 	
-	
-	
-		
 		public function convertLittleEndian(data:Number):String {
             var numberStr:String= ""
             endian= ""
@@ -290,8 +238,6 @@ trace("signature valid:", valid);
 			endian= reverseHashBytes(numberStr)
 			
 			check()
-				
-			
 			
 				function check(){
 				if(endian.length!=16){
@@ -316,12 +262,11 @@ trace("signature valid:", valid);
 			}
 			
 			return reversedData
-			
 		}
 		
 		public function generateScriptPubKey(pkh:String) {
 			var ripe:RIPEMD160 = new RIPEMD160();
-		    var scriptPubKey:ByteArray= new ByteArray()
+		        var scriptPubKey:ByteArray= new ByteArray()
 			scriptPubKey.writeByte(0x76)
 			scriptPubKey.writeByte(0xa9)
 			scriptPubKey.writeByte(0x14)
@@ -333,7 +278,6 @@ trace("signature valid:", valid);
             return scriptPubKey
 		}
 		
-
 	}
 	
 }
