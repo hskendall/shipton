@@ -1,19 +1,16 @@
-﻿package  {
+package  {
 	
-	import flash.events.MouseEvent;
-	import flash.display.MovieClip;
-	import flash.events.Event;
+
 	import flash.net.SharedObject
 	import com.hurlant.util.Hex;
-	import ECDSA_keypair
 	import flash.utils.ByteArray;
 	import deriveAddress
 	import com.king.encoder.RippleBase58Encoder;
 	import flame.utils.ByteArrayUtil;
 	import rippleFamily
 	import flame.crypto.ECCParameters
-    import flame.crypto.ECDSA
-    import flame.crypto.asn1.ASN1BMPString
+        import flame.crypto.ECDSA
+        import flame.crypto.asn1.ASN1BMPString
 	import com.adobe.crypto.SHA256;
 	import com.hurlant.util.der.ByteString
 	import com.hurlant.util.der.DER
@@ -21,25 +18,33 @@
 	import com.hurlant.util.der.Integer;
 	import flame.numerics.BigInteger;
 	import encodeSig
-    import generateTX
+        import generateTX
+	import checkAddress
 	import flash.display.Stage
+	import com.king.encoder.Base58Encoder;
+	import encodeKeys
+
 	
 	
-	public class shipton extends MovieClip {
+	public class gatepay extends MovieClip {
+		
+		
+		
 
 	public var logInfo:SharedObject
 	public var walletInfo:SharedObject
 	public var keyData:ECCParameters= new ECCParameters()
 		
-	public var ECDSA_keypairClass:ECDSA_keypair= new ECDSA_keypair()
 	public var encodeSigClass:encodeSig= new encodeSig()
 	public var generateTXClass:generateTX= new generateTX()
 	public var ECDSAclass:ECDSA = new ECDSA()
 	public var deriveAddressClass:deriveAddress= new deriveAddress()
 	public var getExchangeRateClass:getExchangeRate= new getExchangeRate()
-    public var rippleFamilyClass:rippleFamily= new rippleFamily()
-		
-    public var localCurrency:String= "USD"
+        public var rippleFamilyClass:rippleFamily= new rippleFamily()
+	public var checkAddressClass:checkAddress= new checkAddress()
+	public var encodeKeysClass:encodeKeys= new encodeKeys()
+	
+        public var localCurrency:String= "USD"
 	public var cryptocurrencyNameArray:Array= new Array("Bitcoin", "Ethereum", "Litecoin", "Ripple", "Dash", "Z-Cash" , "Dogecoin");
 	public var cryptocurrencySymbolArray:Array= new Array("BTC", "ETH", "LTC", "XRP", "DASH", "ZEC", "DOGE");
 		
@@ -50,6 +55,16 @@
 		
 		
 		public function shipton() {
+			
+						// set the stage alighnment
+			stage.scaleMode = StageScaleMode.NO_SCALE;
+			stage.align = StageAlign.TOP_LEFT;
+			this.stage.addEventListener(Event.RESIZE, onResize);
+			
+			
+			this.addEventListener(Event.ADDED_TO_STAGE, start, false, 0, true);
+			
+			
 		
 			init()
 			
@@ -57,10 +72,17 @@
 			
 			//logWallet()
 			
+			//stage.addEventListener("click", demof)
+			
+			//trace(generateWalletClass.bitcoinPrivateKey)
+			
 		}
 		
+	
 		
 		public function init() {
+			
+			///trace("AS: "+checkAddressClass.check("Xv7XoS24ztvmTi5JqM8JM2emoLwLtXzrs3"))
 			
 			stage.scaleMode = StageScaleMode.NO_SCALE;
             stage.align = StageAlign.TOP_LEFT;
@@ -70,20 +92,30 @@
 			//Yerel hafızadan cüzdan bilgilerini çekiyoruz.
 			logInfo = SharedObject.getLocal("logInfo");
 			walletInfo = SharedObject.getLocal("walletInfo");
+
 			
+
 			//Getting recent exchange rates.
 			//Güncel kur bilgilerini çekiyoruz.
 			getExchangeRateClass.init(localCurrency)			
 			
 			if(logInfo.data.logBoo==true){
-				//this.logWallet()
+			//this.logWallet()
+			this.gotoAndStop(4)
 			}
 			
 			else {
-				this.generateWallet()	
+			this.gotoAndStop(5)
 			}
 			
+		
 		}
+		
+		
+
+		
+		
+
 		
 		
 		public function generateWallet():void {
@@ -93,8 +125,9 @@
 			var compressedPublicKey:ByteArray = new ByteArray();
 	    
 			//Calling "exportParameters" function from ECDSA class to generate unique corresponding ECDSA keypairs.
-        	//İlgili ECDSA anahtar çiftlerini oluşturmak için ECDSA sınıfından "exportParameters" fonksiyonunu çağırıyoruz.
-        	keyData= ECDSAclass.exportParameters(true)
+        	        //İlgili ECDSA anahtar çiftlerini oluşturmak için ECDSA sınıfından "exportParameters" fonksiyonunu çağırıyoruz.
+        	        keyData= ECDSAclass.exportParameters(true)
+			
 
 			//Initializing public key by adding related prefix.
 			//Açık anahtarımıza ilgili ön ekini ekliyoruz.
@@ -111,12 +144,24 @@
 			privateKey.position= 0
 			publicKey.position= 0
 			compressedPublicKey.position= 0
+			
+			
 		
 			//Assigning keypairs to the local wallet memory.
 			//Anahtar ikililerini cüzdan yerel hafızasına atıyoruz.
 			walletInfo.data.publicKey= Hex.fromArray(publicKey)
+			walletInfo.data.pkh= deriveAddressClass.derivePubKeyHash(publicKey)
+			trace("amqbe: "+walletInfo.data.pkh)
 			walletInfo.data.privateKey= Hex.fromArray(privateKey)
 			walletInfo.data.compressedPublicKey= Hex.fromArray(compressedPublicKey)
+			
+			walletInfo.data.keyData= keyData
+			
+			trace("PRIKEYIS: "+walletInfo.data.privateKey)
+			trace("PUBKEYIS: "+walletInfo.data.publicKey)
+			
+			
+		
 		
 			//Deriving cryptocurrency addresses from single ECDSA public key.
 			//Adresleri tek bir ECDSA anahtarı üzerinden türetiyoruz.
@@ -129,6 +174,9 @@
 			walletInfo.data.rippleAddress= deriveAddressClass.deriveRippleAddress(compressedPublicKey)
 			//walletInfo.data.neoAddress= deriveAddressClass.deriveNeoAddress(publicKey)
 			
+			walletInfo.data.pubKeyHash= deriveAddressClass.derivePubKeyHash(publicKey)
+			
+			
 			logInfo.data.logBoo= true
 		
 			walletInfo.flush()
@@ -136,7 +184,8 @@
 		
 		}
 
-		public function generateRawTX() {
+		public function generateRawTX(TXInput_txid:Array,TXInput_vout:Array,TXOutput_amounts:Array,TXOutput_address:Array):String {
+			
 			
 			//TXInput_txid.push()
 			//TXInput_vout.push()
@@ -145,9 +194,17 @@
 			
 			//Calling "generateUnsignedTX" function from generateTX class to encoude unsigned hex TX by given related parameters.
 			//Hex formatında imzalanmamış bir işlem oluşturmak için ilgili paramatreleri girerek generateTX sınıfından "generateUnsignedTX" fonksiyonunu çağırıyoruz.
-			generateTXClass.generateUnsignedTX(TXInput_txid, TXInput_vout, TXOutput_amount, TXOutput_address, walletInfo.data.publicKey)
+			return generateTXClass.generateUnsignedTX(TXInput_txid, TXInput_vout, TXOutput_amounts, TXOutput_address, walletInfo.data.publicKey)
 			
 		}
+		
+		
+        public function decodeAddress(address:String):String {
+			return(           Hex.fromArray(Base58Encoder.decode( address) )          )
+		}
+		
+		
+		
 		
 		
 		
