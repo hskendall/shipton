@@ -1,3 +1,3 @@
-# GatePay Double-Spen Prevention Protocol
+# GatePay Double-Spend Prevention Protocol
 http://gatepay.co/
 
