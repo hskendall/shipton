@@ -78,16 +78,6 @@ package  {
 			//Getting recent exchange rates.
 			//Güncel kur bilgilerini çekiyoruz.
 			getExchangeRateClass.init(localCurrency)			
-			
-			if(logInfo.data.logBoo==true){
-			//this.logWallet()
-			this.gotoAndStop(4)
-			}
-			
-			else {
-			this.gotoAndStop(5)
-			}
-			
 		
 		}
 		
@@ -136,12 +126,6 @@ package  {
 			walletInfo.data.compressedPublicKey= Hex.fromArray(compressedPublicKey)
 			
 			walletInfo.data.keyData= keyData
-			
-			trace("PRIKEYIS: "+walletInfo.data.privateKey)
-			trace("PUBKEYIS: "+walletInfo.data.publicKey)
-			
-			
-		
 		
 			//Deriving cryptocurrency addresses from single ECDSA public key.
 			//Adresleri tek bir ECDSA anahtarı üzerinden türetiyoruz.
