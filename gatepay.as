@@ -164,7 +164,7 @@ package  {
 		
 		
         public function decodeAddress(address:String):String {
-			return(           Hex.fromArray(Base58Encoder.decode( address) )          )
+			return(Hex.fromArray(Base58Encoder.decode(address)))
 		}
 
 		
